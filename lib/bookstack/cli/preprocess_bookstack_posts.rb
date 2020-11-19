@@ -53,15 +53,18 @@ module Bookstack
 
         doc = Nokogiri::HTML(html)
 
-        # Remove chapters whose title contains "SkipExport".
-        skip_headers = doc.css("h1:contains('SkipExport')")
-        skip_headers.each do |header_node|
-          nodes_to_delete = collect_until_css_class.call(header_node, "page-break")
-          nodes_to_delete.each(&:remove)
-        end
+        denylist = %w[SkipExport Draft]
+        denylist.each do |denyword|
+          # Remove chapters whose title contains "<denyword>".
+          skip_headers = doc.css("h1:contains('#{denyword}')")
+          skip_headers.each do |header_node|
+            nodes_to_delete = collect_until_css_class.call(header_node, "page-break")
+            nodes_to_delete.each(&:remove)
+          end
 
-        # Remove ToC links for removed chapters
-        doc.css("a:contains('SkipExport')").map(&:parent).each(&:remove)
+          # Remove ToC links for removed chapters
+          doc.css("a:contains('#{denyword}')").map(&:parent).each(&:remove)
+        end
 
         # Remove trailing page break (displays as horizontal lines).
         last_element = doc.at_css(".page-content").children.reverse.find(&:element?)
