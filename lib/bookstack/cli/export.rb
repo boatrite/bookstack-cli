@@ -23,7 +23,7 @@ module Bookstack
         raw_export_output = api.export resource, found_record.id, type: Bookstack::Cli::Api::Type::HTML
 
         # Set the output file
-        output_file_path = options[:output_file] || "#{slug}.md"
+        output_file_path = options[:output_file] || "#{slug}.#{options[:html] ? "html" : "md"}"
 
         # Extract the images and perform other cleanup on the raw html export.
         #
