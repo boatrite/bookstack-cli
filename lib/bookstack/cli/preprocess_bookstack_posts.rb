@@ -1,7 +1,5 @@
 require "nokogiri"
 
-FileBlob = Struct.new(:file_path, :file_contents, keyword_init: true)
-
 module Bookstack
   module Cli
     class PreprocessBookstackPosts
@@ -16,7 +14,7 @@ module Bookstack
         output_dir = File.dirname output_file_path
 
         # Initialize return variable
-        file_blobs_to_return = []
+        image_file_blobs = []
 
         # Extract the images
         html = raw_export_output.split("\n").map { |html_line|
@@ -30,7 +28,7 @@ module Bookstack
 
             local_image_path = File.join slug, image_name
 
-            file_blobs_to_return << FileBlob.new(
+            image_file_blobs << FileBlob.new(
               file_path: File.join(output_dir, slug, image_name),
               file_contents: Base64.decode64(base64)
             )
@@ -81,9 +79,9 @@ module Bookstack
           wrapper_element.remove
         end
 
-        file_blobs_to_return << FileBlob.new(file_path: output_file_path, file_contents: doc.to_html)
+        html = doc.to_html
 
-        file_blobs_to_return
+        [image_file_blobs, html]
       end
     end
   end
