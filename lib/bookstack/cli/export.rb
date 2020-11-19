@@ -64,9 +64,15 @@ module Bookstack
           write_file_blob[file_blob]
         end
 
-        # Turn the html blob into a markdown blob
-        markdown_file_blob = TranspileToMarkdown.call(slug, output_file_path, html)
-        write_file_blob[markdown_file_blob]
+        # Possibly turn the html blob into a markdown blob.
+        # Save final blob to file
+        if options[:html]
+          html_file_blob = FileBlob.new(file_path: output_file_path, file_contents: html)
+          write_file_blob[html_file_blob]
+        else
+          markdown_file_blob = TranspileToMarkdown.call(slug, output_file_path, html)
+          write_file_blob[markdown_file_blob]
+        end
 
         nil
       end

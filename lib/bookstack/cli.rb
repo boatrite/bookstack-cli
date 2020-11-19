@@ -33,6 +33,7 @@ module Bookstack
       desc "export RESOURCE SLUG", "Export BookStack book or chapter"
       method_option :output_file, aliases: "-of", desc: "Where to save main export file"
       method_option :dryrun, desc: "Show output without actually making changes"
+      method_option :html, desc: "Save the html version instead of the markdown version"
       def export(resource, slug)
         Export.call resource, slug, options, api
       end
