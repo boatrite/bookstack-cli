@@ -35,6 +35,14 @@ module Bookstack
 
           # Get the raw html export from BookStack
           raw_export_output = api.export resource, slug, type: Bookstack::Cli::Api::Type::HTML
+
+          # We need to redefine slug since it's used in the naming for
+          # extracted images as well as possibly the final output filename.
+          # e.g. 'books/blog-posts/page/game-boy-advance-development-with-mruby'
+          # to 'game-boy-advance-development-with-mruby'
+          # If we don't do this, we end up creating extra directories 'books',
+          # 'blog-posts', and 'page'
+          slug = slug.split("/").last
         end
 
         # Set the output file
