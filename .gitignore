@@ -9,3 +9,6 @@
 
 # rspec failure tracking
 .rspec_status
+
+# bookstack-cli cache directory - stores bookstack session for hacky pages export
+cache

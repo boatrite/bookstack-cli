@@ -10,17 +10,32 @@ module Bookstack
 
     class Export
       def self.call(resource, slug, options, api)
-        # Get all of the books or chapters
-        records = api.public_send("#{resource}s")
+        case resource
+        when Api::Resource::BOOKS, Api::Resource::CHAPTERS
+          # Get all of the books or chapters
+          records = api.public_send("#{resource}s")
 
-        # Get the book or chapter based on the slug
-        found_record = records.find { |r| r.slug == slug }
+          # Get the book or chapter based on the slug
+          found_record = records.find { |r| r.slug == slug }
 
-        # Fail right away if we didn't find it
-        raise "No #{resource} found with slug '#{slug}'" if found_record.nil?
+          # Fail right away if we didn't find it
+          raise "No #{resource} found with slug '#{slug}'" if found_record.nil?
 
-        # Get the raw html export from BookStack
-        raw_export_output = api.export resource, found_record.id, type: Bookstack::Cli::Api::Type::HTML
+          # Get the raw html export from BookStack
+          raw_export_output = api.export resource, found_record.id, type: Bookstack::Cli::Api::Type::HTML
+        when Api::Resource::PAGES
+          # Until BookStack supports native page export (slated for v.0.31.0)
+          # https://github.com/BookStackApp/BookStack/pull/2382
+          # It's technically merged, but I likely won't bother updating until
+          # it's officially released and the docker release is updated.
+
+          # To get this working, the api.export method already special cases
+          # PAGES, so we just call the export method in this particular way and
+          # we'll get the hacky code path for the page html export
+
+          # Get the raw html export from BookStack
+          raw_export_output = api.export resource, slug, type: Bookstack::Cli::Api::Type::HTML
+        end
 
         # Set the output file
         output_file_path = options[:output_file] || "#{slug}.#{options[:html] ? "html" : "md"}"

@@ -27,7 +27,7 @@ module Bookstack
       method_option :type, aliases: "-t", desc: "'pdf', 'plaintext', 'html'"
       method_option :output_file, aliases: "-of", desc: "Where to save exported file"
       def raw_export(resource, slug)
-        RawExport.call resource, slug, options, api
+        RawExport.call resource.to_sym, slug, options, api
       end
 
       desc "export RESOURCE SLUG", "Export BookStack book or chapter"
@@ -35,7 +35,7 @@ module Bookstack
       method_option :dryrun, desc: "Show output without actually making changes"
       method_option :html, desc: "Save the html version instead of the markdown version"
       def export(resource, slug)
-        Export.call resource, slug, options, api
+        Export.call resource.to_sym, slug, options, api
       end
 
       private
@@ -44,7 +44,7 @@ module Bookstack
         raise "Missing BOOKSTACK_TOKEN_ID from environment" if ENV["BOOKSTACK_TOKEN_ID"].nil? || ENV["BOOKSTACK_TOKEN_ID"].empty?
         raise "Missing BOOKSTACK_TOKEN_SECRET from environment" if ENV["BOOKSTACK_TOKEN_SECRET"].nil? || ENV["BOOKSTACK_TOKEN_SECRET"].empty?
 
-        @api ||= Bookstack::Cli::Api.new ENV["BOOKSTACK_TOKEN_ID"], ENV["BOOKSTACK_TOKEN_SECRET"]
+        @api ||= Bookstack::Cli::Api.new ENV["BOOKSTACK_TOKEN_ID"], ENV["BOOKSTACK_TOKEN_SECRET"], ENV["FIREFOX_PROFILE"]
       end
     end
   end
