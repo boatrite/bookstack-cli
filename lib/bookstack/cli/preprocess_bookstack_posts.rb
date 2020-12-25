@@ -3,8 +3,8 @@ require "nokogiri"
 module Bookstack
   module Cli
     class PreprocessBookstackPosts
-      IMAGE_URL_REGEX = /(http:\/\/localhost:8080)?\/uploads\/images\/gallery\/\d{4}-\d{2}-\w{3}\/[a-zA-Z0-9_\-.]+/
-      IMAGE_NAME_REGEX = /(http:\/\/localhost:8080)?\/uploads\/images\/gallery\/\d{4}-\d{2}-\w{3}\/\K[a-zA-Z0-9_\-.]+/
+      IMAGE_URL_REGEX = /(http:\/\/localhost:8080)?\/uploads\/images\/gallery\/\d{4}-\d{2}(?:-\w{3})?\/[a-zA-Z0-9_\-.]+/
+      IMAGE_NAME_REGEX = /(http:\/\/localhost:8080)?\/uploads\/images\/gallery\/\d{4}-\d{2}(?:-\w{3})?\/\K[a-zA-Z0-9_\-.]+/
 
       DATA_REGEX = /data:image\/[^;]*;base64,[a-zA-Z0-9+\/=]*/
       BASE64_REGEX = /data:image\/[^;]*;base64,\K[a-zA-Z0-9+\/=]*/
