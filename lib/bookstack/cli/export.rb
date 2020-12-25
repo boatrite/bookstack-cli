@@ -96,12 +96,7 @@ module Bookstack
           markdown_file_blob = TranspileToMarkdown.call(slug, output_file_path, html)
 
           if options[:markdeep]
-            markdeep_contents = '<meta charset="utf-8">' \
-              "\n\n" +
-              markdown_file_blob.file_contents +
-              "\n\n" \
-              '<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>'
-            markdeep_file_blob = FileBlob.new(file_path: markdown_file_blob.file_path, file_contents: markdeep_contents)
+            markdeep_file_blob = ConvertMarkdownToMarkdeep.call(markdown_file_blob)
             write_file_blob[markdeep_file_blob]
           else
             write_file_blob[markdown_file_blob]

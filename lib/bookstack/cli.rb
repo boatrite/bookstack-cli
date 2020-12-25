@@ -4,6 +4,7 @@ require "httparty"
 require "json"
 
 require "bookstack/cli/api"
+require "bookstack/cli/convert_markdown_to_markdeep"
 require "bookstack/cli/export"
 require "bookstack/cli/raw_export"
 require "bookstack/cli/version"
