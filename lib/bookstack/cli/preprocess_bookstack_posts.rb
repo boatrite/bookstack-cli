@@ -16,6 +16,9 @@ module Bookstack
         # Initialize return variable
         image_file_blobs = []
 
+        # Replace windows line endings
+        raw_export_output.gsub!("\r\n", "\n")
+
         # Extract the images
         html = raw_export_output.split("\n").map { |html_line|
           image_match = html_line.match(IMAGE_NAME_REGEX)
