@@ -44,7 +44,7 @@ module Bookstack
           else
             html_line
           end
-        }.join("\n")
+        }.map(&:rstrip).join("\n")
 
         # Nokogiri helper
         collect_until_css_class = ->(first, css_class) {
