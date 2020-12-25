@@ -79,6 +79,12 @@ turning it into markdown. Mostly for debugging.
 bookstack-cli export --html chapter my-chapter-slug
 ```
 
+There's also a `--markdeep` flag which adds the two lines necessary for markdeep.
+
+```
+bookstack-cli export --markdeep chapter my-chapter-slug
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

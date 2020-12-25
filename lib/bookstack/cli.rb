@@ -34,6 +34,7 @@ module Bookstack
       method_option :output_file, aliases: "-of", desc: "Where to save main export file"
       method_option :dryrun, desc: "Show output without actually making changes"
       method_option :html, desc: "Save the html version instead of the markdown version"
+      method_option :markdeep, desc: "Save the markdeep version instead of the markdown version"
       def export(resource, slug)
         Export.call resource.to_sym, slug, options, api
       end
