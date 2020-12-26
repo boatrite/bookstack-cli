@@ -31,6 +31,10 @@ module Bookstack
 
         doc = Nokogiri::HTML(html)
 
+        # Remove any of my tags in the title
+        title_heading = doc.at_css(".page-content h1")
+        title_heading.content = title_heading.content.gsub(/\[.+?\] /, "")
+
         denylist = %w[SkipExport Draft]
         denylist.each do |denyword|
           # Remove chapters whose title contains "<denyword>".
