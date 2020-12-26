@@ -17,6 +17,9 @@ module Bookstack
           "![#{$1}](#{$2})"
         end
 
+        # Convert ``` to ~~~ since I like how ~~~ works more in Markdeep
+        markdeep_contents.gsub!("```", "~~~")
+
         markdeep_contents = '<meta charset="utf-8">' \
           "\n\n" +
           markdeep_contents +
