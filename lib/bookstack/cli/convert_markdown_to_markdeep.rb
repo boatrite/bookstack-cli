@@ -4,6 +4,10 @@ module Bookstack
       def self.call(markdown_file_blob)
         markdeep_contents = markdown_file_blob.file_contents
 
+        markdeep_contents.sub!(/^# (.*?)$/) do
+          "**#{$1}**"
+        end
+
         # Fix image syntax.
         #
         # Markdeep automatically links to images with just the plain markdown
