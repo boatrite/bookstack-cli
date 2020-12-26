@@ -19,34 +19,6 @@ module Bookstack
         # Replace windows line endings
         raw_export_output.gsub!("\r\n", "\n")
 
-        # Extract the images
-        html = raw_export_output.split("\n").map { |html_line|
-          image_match = html_line.match(IMAGE_NAME_REGEX)
-          if image_match
-            image_name = image_match[0]
-
-            base64_match = html_line.match(BASE64_REGEX)
-            raise "Found bookstack image but no base64" unless base64_match
-            base64 = base64_match[0]
-
-            local_image_dir = options[:output_dir] || slug
-            local_image_path = File.join local_image_dir, image_name
-
-            image_file_blobs << FileBlob.new(
-              file_path: File.join(output_dir, local_image_path),
-              file_contents: Base64.decode64(base64)
-            )
-
-            new_html_line = html_line
-              .sub(IMAGE_URL_REGEX, local_image_path)
-              .sub(DATA_REGEX, local_image_path)
-
-            new_html_line
-          else
-            html_line
-          end
-        }.map(&:rstrip).join("\n")
-
         # Nokogiri helper
         collect_until_css_class = ->(first, css_class) {
           return [] if first.next.nil?
@@ -54,6 +26,8 @@ module Bookstack
           [first] :
           [first, *collect_until_css_class.call(first.next, css_class)]
         }
+
+        html = raw_export_output
 
         doc = Nokogiri::HTML(html)
 
@@ -87,6 +61,37 @@ module Bookstack
         end
 
         html = doc.to_html
+
+        # Extract the images
+        #
+        # In particular, do this after clearing out filtered sections so that we
+        # don't extract images for parts that have been removed.
+        html = html.split("\n").map { |html_line|
+          image_match = html_line.match(IMAGE_NAME_REGEX)
+          if image_match
+            image_name = image_match[0]
+
+            base64_match = html_line.match(BASE64_REGEX)
+            raise "Found bookstack image but no base64" unless base64_match
+            base64 = base64_match[0]
+
+            local_image_dir = options[:output_dir] || slug
+            local_image_path = File.join local_image_dir, image_name
+
+            image_file_blobs << FileBlob.new(
+              file_path: File.join(output_dir, local_image_path),
+              file_contents: Base64.decode64(base64)
+            )
+
+            new_html_line = html_line
+              .sub(IMAGE_URL_REGEX, local_image_path)
+              .sub(DATA_REGEX, local_image_path)
+
+            new_html_line
+          else
+            html_line
+          end
+        }.map(&:rstrip).join("\n")
 
         [image_file_blobs, html]
       end
