@@ -33,6 +33,7 @@ module Bookstack
 
       desc "export RESOURCE SLUG", "Export BookStack book or chapter"
       method_option :output_file, aliases: "-of", desc: "Where to save main export file"
+      method_option :output_dir, aliases: "-od", desc: "Directory to put extracted files (i.e. images)"
       method_option :dryrun, desc: "Show output without actually making changes"
       method_option :html, desc: "Save the html version instead of the markdown version"
       method_option :markdeep, desc: "Save the markdeep version instead of the markdown version"

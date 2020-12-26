@@ -52,7 +52,7 @@ module Bookstack
         #
         # Returns image blobs which will be written to files as well as the
         # cleaned up html which will be converted to markdown.
-        image_file_blobs, html = PreprocessBookstackPosts.call(slug, output_file_path, raw_export_output)
+        image_file_blobs, html = PreprocessBookstackPosts.call(slug, output_file_path, raw_export_output, options)
 
         write_file_blob = ->(file_blob) {
           # For debugging

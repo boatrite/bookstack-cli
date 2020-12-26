@@ -9,9 +9,9 @@ module Bookstack
       DATA_REGEX = /data:image\/[^;]*;base64,[a-zA-Z0-9+\/=]*/
       BASE64_REGEX = /data:image\/[^;]*;base64,\K[a-zA-Z0-9+\/=]*/
 
-      def self.call(slug, output_file_path, raw_export_output)
+      def self.call(slug, output_file_path, raw_export_output, options)
         # Get directory of output file
-        output_dir = File.dirname output_file_path
+        output_dir = File.dirname(output_file_path)
 
         # Initialize return variable
         image_file_blobs = []
@@ -29,10 +29,11 @@ module Bookstack
             raise "Found bookstack image but no base64" unless base64_match
             base64 = base64_match[0]
 
-            local_image_path = File.join slug, image_name
+            local_image_dir = options[:output_dir] || slug
+            local_image_path = File.join local_image_dir, image_name
 
             image_file_blobs << FileBlob.new(
-              file_path: File.join(output_dir, slug, image_name),
+              file_path: File.join(output_dir, local_image_path),
               file_contents: Base64.decode64(base64)
             )
 
