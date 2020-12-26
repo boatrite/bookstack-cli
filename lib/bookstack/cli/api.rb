@@ -3,6 +3,8 @@ require "open3"
 module Bookstack
   module Cli
     class Api
+      using RefineString
+
       class Record < OpenStruct
         def respond_to_missing?(meth, include_all)
           super
@@ -44,7 +46,7 @@ module Bookstack
       end
 
       def export(resource, resource_id, type:)
-        case resource
+        case resource.pluralize.to_sym
         when Resource::BOOKS, Resource::CHAPTERS
           case type
           in Type::PLAINTEXT | Type::PDF | Type::HTML

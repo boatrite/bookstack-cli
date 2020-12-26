@@ -1,6 +1,7 @@
 require "digest"
 
 require "bookstack/cli/api"
+require "bookstack/cli/convert_markdown_to_markdeep"
 require "bookstack/cli/preprocess_bookstack_posts"
 require "bookstack/cli/transpile_to_markdown"
 
@@ -9,8 +10,10 @@ module Bookstack
     FileBlob = Struct.new(:file_path, :file_contents, keyword_init: true)
 
     class Export
+      using RefineString
+
       def self.call(resource, slug, options, api)
-        case resource
+        case resource.pluralize.to_sym
         when Api::Resource::BOOKS, Api::Resource::CHAPTERS
           # Get all of the books or chapters
           records = api.public_send("#{resource}s")

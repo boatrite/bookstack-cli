@@ -3,8 +3,19 @@ require "amazing_print"
 require "httparty"
 require "json"
 
+module Bookstack
+  module Cli
+    module RefineString
+      refine String do
+        def pluralize
+          "#{self}s" # naive pluralize which is good enough for this gem's usecase
+        end
+      end
+    end
+  end
+end
+
 require "bookstack/cli/api"
-require "bookstack/cli/convert_markdown_to_markdeep"
 require "bookstack/cli/export"
 require "bookstack/cli/raw_export"
 require "bookstack/cli/version"
@@ -28,7 +39,7 @@ module Bookstack
       method_option :type, aliases: "-t", desc: "'pdf', 'plaintext', 'html'"
       method_option :output_file, aliases: "-of", desc: "Where to save exported file"
       def raw_export(resource, slug)
-        RawExport.call resource.to_sym, slug, options, api
+        RawExport.call resource, slug, options, api
       end
 
       desc "export RESOURCE SLUG", "Export BookStack book or chapter"
@@ -38,7 +49,7 @@ module Bookstack
       method_option :html, desc: "Save the html version instead of the markdown version"
       method_option :markdeep, desc: "Save the markdeep version instead of the markdown version"
       def export(resource, slug)
-        Export.call resource.to_sym, slug, options, api
+        Export.call resource, slug, options, api
       end
 
       private
