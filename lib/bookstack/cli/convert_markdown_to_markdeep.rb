@@ -34,7 +34,7 @@ module Bookstack
         # If not equal to markdeep, it means we're trying to specify options to
         # embed
         if markdeep_options != "markdeep"
-          markdeep_contents += "<script>window.markdeepOptions=#{markdeep_options}</script>"
+          markdeep_contents += "\n<script>window.markdeepOptions=#{markdeep_options}</script>"
         end
 
         FileBlob.new(file_path: markdown_file_blob.file_path, file_contents: markdeep_contents)
