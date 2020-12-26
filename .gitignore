@@ -12,3 +12,6 @@
 
 # bookstack-cli cache directory - stores bookstack session for hacky pages export
 cache
+
+# ignore sensitive info file needed to run specs
+spec/fixtures/env.sh
