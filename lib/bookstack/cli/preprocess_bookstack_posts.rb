@@ -6,15 +6,18 @@ module Bookstack
       IMAGE_URL_REGEX = /(http:\/\/localhost:8080)?\/uploads\/images\/gallery\/\d{4}-\d{2}(?:-\w{3})?\/[a-zA-Z0-9_\-.]+/
       IMAGE_NAME_REGEX = /(http:\/\/localhost:8080)?\/uploads\/images\/gallery\/\d{4}-\d{2}(?:-\w{3})?\/\K[a-zA-Z0-9_\-.]+/
 
+      ATTACHMENT_URL_REGEX = /(http:\/\/localhost:8080)?\/attachments\/\d+/
+      ATTACHMENT_NAME_REGEX = /(http:\/\/localhost:8080)?\/attachments\/\d+">\K[a-zA-Z0-9_\-.]+/
+
       DATA_REGEX = /data:image\/[^;]*;base64,[a-zA-Z0-9+\/=]*/
       BASE64_REGEX = /data:image\/[^;]*;base64,\K[a-zA-Z0-9+\/=]*/
 
-      def self.call(slug, output_file_path, raw_export_output, options)
+      def self.call(slug, output_file_path, raw_export_output, options, api)
         # Get directory of output file
         output_dir = File.dirname(output_file_path)
 
         # Initialize return variable
-        image_file_blobs = []
+        extracted_file_blobs = []
 
         # Replace windows line endings
         raw_export_output.gsub!("\r\n", "\n")
@@ -66,38 +69,63 @@ module Bookstack
 
         html = doc.to_html
 
-        # Extract the images
+        # Extract the attachments and images
         #
         # In particular, do this after clearing out filtered sections so that we
-        # don't extract images for parts that have been removed.
+        # don't extract files for parts that have been removed.
+        local_extraction_dir = options[:output_dir] || slug
         html = html.split("\n").map { |html_line|
+          attachment_match = html_line.match(ATTACHMENT_NAME_REGEX)
+          html_line =
+            if attachment_match
+              attachment_name = attachment_match[0]
+              attachment_url = html_line.match(ATTACHMENT_URL_REGEX)[0]
+              attachment_binary_data = api.download_attachment(attachment_url)
+
+              local_extracted_file_path = File.join local_extraction_dir, attachment_name
+
+              extracted_file_blobs << FileBlob.new(
+                file_path: File.join(output_dir, local_extracted_file_path),
+                file_contents: attachment_binary_data
+              )
+
+              new_html_line = html_line
+                .sub(ATTACHMENT_URL_REGEX, local_extracted_file_path)
+
+              new_html_line
+            else
+              html_line
+            end
+
           image_match = html_line.match(IMAGE_NAME_REGEX)
-          if image_match
-            image_name = image_match[0]
+          html_line =
+            if image_match
+              image_name = image_match[0]
 
-            base64_match = html_line.match(BASE64_REGEX)
-            raise "Found bookstack image but no base64" unless base64_match
-            base64 = base64_match[0]
+              base64_match = html_line.match(BASE64_REGEX)
+              raise "Found bookstack image but no base64" unless base64_match
+              base64 = base64_match[0]
 
-            local_image_dir = options[:output_dir] || slug
-            local_image_path = File.join local_image_dir, image_name
+              local_extracted_file_path = File.join local_extraction_dir, image_name
 
-            image_file_blobs << FileBlob.new(
-              file_path: File.join(output_dir, local_image_path),
-              file_contents: Base64.decode64(base64)
-            )
+              extracted_file_blobs << FileBlob.new(
+                file_path: File.join(output_dir, local_extracted_file_path),
+                file_contents: Base64.decode64(base64)
+              )
 
-            new_html_line = html_line
-              .sub(IMAGE_URL_REGEX, local_image_path)
-              .sub(DATA_REGEX, local_image_path)
+              new_html_line = html_line
+                .sub(IMAGE_URL_REGEX, local_extracted_file_path)
+                .sub(DATA_REGEX, local_extracted_file_path)
 
-            new_html_line
-          else
-            html_line
-          end
-        }.map(&:rstrip).join("\n")
+              new_html_line
+            else
+              html_line
+            end
 
-        [image_file_blobs, html]
+          html_line.rstrip
+        }.join("\n")
+
+        [extracted_file_blobs, html]
       end
     end
   end

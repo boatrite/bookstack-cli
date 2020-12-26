@@ -51,11 +51,11 @@ module Bookstack
         # Set the output file
         output_file_path = options[:output_file] || "#{slug}.#{options[:html] ? "html" : "md"}"
 
-        # Extract the images and perform other cleanup on the raw html export.
+        # Extract the attachments and images and perform other cleanup on the raw html export.
         #
         # Returns image blobs which will be written to files as well as the
         # cleaned up html which will be converted to markdown.
-        image_file_blobs, html = PreprocessBookstackPosts.call(slug, output_file_path, raw_export_output, options)
+        extracted_file_blobs, html = PreprocessBookstackPosts.call(slug, output_file_path, raw_export_output, options, api)
 
         write_file_blob = ->(file_blob) {
           # For debugging
@@ -86,7 +86,7 @@ module Bookstack
         }
 
         # Write image blobs to file
-        image_file_blobs.each do |file_blob|
+        extracted_file_blobs.each do |file_blob|
           write_file_blob[file_blob]
         end
 

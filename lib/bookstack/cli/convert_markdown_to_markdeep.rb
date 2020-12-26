@@ -17,6 +17,11 @@ module Bookstack
           "![#{$1}](#{$2})"
         end
 
+        # Translate markdown video attachments into inline markdeep video
+        markdeep_contents.gsub!(/\[(.+?.mp4)\]\((.*?)\)/) do
+          "![#{$1.delete("\\")}](#{$2})"
+        end
+
         # Convert ``` to ~~~ since I like how ~~~ works more in Markdeep
         markdeep_contents.gsub!("```", "~~~")
 
