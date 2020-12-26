@@ -1,7 +1,7 @@
 module Bookstack
   module Cli
     class ConvertMarkdownToMarkdeep
-      def self.call(markdown_file_blob)
+      def self.call(markdown_file_blob, markdeep_options)
         markdeep_contents = markdown_file_blob.file_contents
 
         markdeep_contents.sub!(/^# (.*?)$/) do
@@ -25,6 +25,12 @@ module Bookstack
           markdeep_contents +
           "\n\n" \
           '<!-- Markdeep: --><style class="fallback">body{visibility:hidden;white-space:pre;font-family:monospace}</style><script src="markdeep.min.js" charset="utf-8"></script><script src="https://morgan3d.github.io/markdeep/latest/markdeep.min.js" charset="utf-8"></script><script>window.alreadyProcessedMarkdeep||(document.body.style.visibility="visible")</script>'
+
+        # If not equal to markdeep, it means we're trying to specify options to
+        # embed
+        if markdeep_options != "markdeep"
+          markdeep_contents += "<script>window.markdeepOptions=#{markdeep_options}</script>"
+        end
 
         FileBlob.new(file_path: markdown_file_blob.file_path, file_contents: markdeep_contents)
       end

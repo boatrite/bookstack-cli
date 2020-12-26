@@ -99,7 +99,7 @@ module Bookstack
           markdown_file_blob = TranspileToMarkdown.call(slug, output_file_path, html)
 
           if options[:markdeep]
-            markdeep_file_blob = ConvertMarkdownToMarkdeep.call(markdown_file_blob)
+            markdeep_file_blob = ConvertMarkdownToMarkdeep.call(markdown_file_blob, options[:markdeep])
             write_file_blob[markdeep_file_blob]
           else
             write_file_blob[markdown_file_blob]
