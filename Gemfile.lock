@@ -5,6 +5,7 @@ PATH
       amazing_print
       httparty
       nokogiri
+      reverse_markdown
       thor
 
 GEM
@@ -38,6 +39,8 @@ GEM
     rainbow (3.0.0)
     rake (12.3.3)
     regexp_parser (1.8.2)
+    reverse_markdown (2.0.0)
+      nokogiri
     rexml (3.2.4)
     rspec (3.10.0)
       rspec-core (~> 3.10.0)
